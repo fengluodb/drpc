@@ -107,12 +107,19 @@ func (c *Client) removeCall(seq uint64) {
 }
 
 func (c *Client) send(call *Call) {
+	var err error
+
 	c.sending.Lock()
-	defer c.sending.Unlock()
+	defer func() {
+		c.sending.Unlock()
+		if err != nil {
+			call.done()
+		}
+	}()
 
 	if c.shutdown || c.closing {
 		call.Error = ErrShutdown
-		call.done()
+		err = ErrShutdown
 		return
 	}
 
@@ -134,7 +141,6 @@ func (c *Client) send(call *Call) {
 		log.Println("rpc:failed to write request, err:", err)
 		call.Error = err
 		c.removeCall(c.seq)
-		call.done()
 	}
 }
 
