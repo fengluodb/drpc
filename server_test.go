@@ -11,7 +11,31 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// user complement
+type mathArgs struct {
+	A int
+	B int
+}
+
+type mathReply struct {
+	C int
+}
+
+func (ma *mathArgs) Marshal() ([]byte, error) {
+	return json.Marshal(ma)
+}
+
+func (ma *mathArgs) Unmarshal(data []byte) error {
+	return json.Unmarshal(data, ma)
+}
+
+func (mr *mathReply) Marshal() ([]byte, error) {
+	return json.Marshal(mr)
+}
+
+func (mr *mathReply) Unmarshal(data []byte) error {
+	return json.Unmarshal(data, mr)
+}
+
 type math struct{}
 
 func (m *math) Add(args *mathArgs, reply *mathReply) error {
@@ -69,31 +93,6 @@ func (m *mathHandler) MulHandler(req []byte) (data []byte, err error) {
 	return reply.Marshal()
 }
 
-type mathArgs struct {
-	A int
-	B int
-}
-
-type mathReply struct {
-	C int
-}
-
-func (ma *mathArgs) Marshal() ([]byte, error) {
-	return json.Marshal(ma)
-}
-
-func (ma *mathArgs) Unmarshal(data []byte) error {
-	return json.Unmarshal(data, ma)
-}
-
-func (mr *mathReply) Marshal() ([]byte, error) {
-	return json.Marshal(mr)
-}
-
-func (mr *mathReply) Unmarshal(data []byte) error {
-	return json.Unmarshal(data, mr)
-}
-
 func RegisterMethodService(s *Server, serviceName string, math Math) {
 	mathHandler := &mathHandler{
 		math: math,
@@ -104,17 +103,21 @@ func RegisterMethodService(s *Server, serviceName string, math Math) {
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
+	startServer()
 }
 
-func TestMath(t *testing.T) {
+func startServer() {
 	listener, err := net.Listen("tcp", "localhost:8888")
 	if err != nil {
-		t.Fatal(err)
+		fmt.Printf("failed to start server, error: %v", err)
 	}
 	server := NewServer()
 	RegisterMethodService(server, "Math", new(math))
-	go server.Serve(listener)
 
+	go server.Serve(listener)
+}
+
+func TestMath(t *testing.T) {
 	conn, err := net.Dial("tcp", "localhost:8888")
 	if err != nil {
 		t.Fatal(err)
@@ -138,14 +141,6 @@ func TestMath(t *testing.T) {
 }
 
 func TestConcurrentMath(t *testing.T) {
-	listener, err := net.Listen("tcp", "localhost:8888")
-	if err != nil {
-		t.Fatal(err)
-	}
-	server := NewServer()
-	RegisterMethodService(server, "Math", new(math))
-	go server.Serve(listener)
-
 	conn, err := net.Dial("tcp", "localhost:8888")
 	if err != nil {
 		t.Fatal(err)
