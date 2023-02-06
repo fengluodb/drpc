@@ -121,6 +121,7 @@ func (s *Server) call(req *RequestHeader, codec ServerCodec, handler Handler, ar
 func RegisterService(s *Server, serviceMethodName string, method Handler) error {
 	dot := strings.LastIndex(serviceMethodName, ".")
 	if dot == -1 {
+		log.Println("serviceMethod bust be the format of serviceName.methodName")
 		return fmt.Errorf("serviceMethod bust be the format of serviceName.methodName")
 	}
 	serviceName := serviceMethodName[:dot]
@@ -134,7 +135,8 @@ func RegisterService(s *Server, serviceMethodName string, method Handler) error 
 	svc := svci.(*service)
 
 	if _, ok := svc.methodMap[methodName]; ok {
-		return fmt.Errorf("rpc:%s has been registered", serviceMethodName)
+		log.Printf("rpc:%s has been registered", serviceMethodName)
+		return fmt.Errorf("%s has been registered", serviceMethodName)
 	}
 	svc.methodMap[methodName] = method
 	log.Printf("rpc:register %s successfully", serviceMethodName)
