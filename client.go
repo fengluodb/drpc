@@ -210,7 +210,7 @@ func (c *Client) readResponse(resp *ResponseHeader) ([]byte, error) {
 
 	if resp.Checksum != crc32.ChecksumIEEE(data) {
 		log.Println("rpc:response checksum mismatch")
-		return nil, fmt.Errorf("rpc:response checksum mismatch")
+		return nil, fmt.Errorf("response checksum mismatch")
 	}
 
 	return data, nil

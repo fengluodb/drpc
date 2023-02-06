@@ -85,19 +85,19 @@ func (s *Server) readRequest(codec ServerCodec) (req *RequestHeader, handler Han
 	// look for the method
 	svci, ok := s.serviceMap.Load(serviceName)
 	if !ok {
-		err = fmt.Errorf("rpc: can't find service:%s", serviceName)
+		err = fmt.Errorf("can't find service:%s", serviceName)
 		return
 	}
 	svc := svci.(*service)
 	handler, ok = svc.methodMap[methodName]
 	if !ok {
-		err = fmt.Errorf("rpc: can't find method:%s", methodName)
+		err = fmt.Errorf("can't find method:%s", methodName)
 		return
 	}
 
 	args, err = codec.ReadRequestBody()
 	if req.Checksum != crc32.ChecksumIEEE(args) {
-		err = fmt.Errorf("rpc:request checksum mismatch")
+		err = fmt.Errorf("request checksum mismatch")
 	}
 	return
 }
