@@ -7,6 +7,7 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
+	"net"
 	"sync"
 )
 
@@ -271,4 +272,12 @@ func (c *clientCodec) ReadResponseBody() (data []byte, err error) {
 
 func (c *clientCodec) Close() error {
 	return c.c.Close()
+}
+
+func Dial(network, address string) (*Client, error) {
+	conn, err := net.Dial(network, address)
+	if err != nil {
+		return nil, err
+	}
+	return NewClient(conn), nil
 }
