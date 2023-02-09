@@ -1,0 +1,11 @@
+message HelloRequest {
+    seq=1 string name;
+}
+
+message HelloReply {
+    optional seq=1 string reply;
+}
+
+service HelloWorld {
+    SayHello(HelloRequest) return (HelloReply);
+}
