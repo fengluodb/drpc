@@ -68,10 +68,7 @@ func (s *Server) readRequest(codec ServerCodec) (req *RequestHeader, handler Han
 	req = new(RequestHeader)
 	err = codec.ReadRequestHeader(req)
 	if err != nil {
-		req = nil
-		if err == io.EOF || err == io.ErrUnexpectedEOF {
-			return
-		}
+		return
 	}
 
 	dot := strings.LastIndex(req.Method, ".")
