@@ -53,7 +53,9 @@ func (s *Server) ServeCodec(codec ServerCodec) {
 	for {
 		req, handler, args, err := s.readRequest(codec)
 		if err != nil {
-			log.Println("rpc:failed to read request, err:", err)
+			if err != io.EOF {
+				log.Println("rpc:failed to read request, err:", err)
+			}
 			break
 		}
 
@@ -167,7 +169,9 @@ func NewServerCodec(conn io.ReadWriteCloser) ServerCodec {
 func (s *serverCodec) ReadRequestHeader(r *RequestHeader) error {
 	data, err := recvFrame(s.r)
 	if err != nil {
-		log.Printf("rpc:failed to receive request header, err is %s", err)
+		if err != io.EOF {
+			log.Printf("rpc:failed to receive request header, err is %s", err)
+		}
 		return err
 	}
 
