@@ -1,0 +1,12 @@
+message MathRequest {
+    seq=1 int32 A;
+    seq=2 int32 B;
+}
+
+message MathReply {
+    seq=1 int32 C;
+}
+
+service Math {
+    Add(MathRequest) return (MathReply);
+}
